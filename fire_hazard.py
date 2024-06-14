@@ -1,3 +1,6 @@
+from typing import Callable
+
+
 class Grid:
     def __init__(self):
         # indices are [row][col]
@@ -8,23 +11,23 @@ class Grid:
     def count_lit(self):
         return sum((sum(row) for row in self._lights))
 
-    def turn_on(self, row_range_inclusive: tuple[int, int], col_range_inclusive: tuple[int, int]):
+    def _apply_operation_to_range(self, row_range_inclusive: tuple[int, int],
+                                  col_range_inclusive: tuple[int, int],
+                                  operation: Callable[[bool], bool]):
         row_range_inclusive = sorted(row_range_inclusive)
         col_range_inclusive = sorted(col_range_inclusive)
         for col in range(col_range_inclusive[0], col_range_inclusive[1] + 1):
             for row in range(row_range_inclusive[0], row_range_inclusive[1] + 1):
-                self._lights[row][col] = True
+                self._lights[row][col] = operation(self._lights[row][col])
+
+    def turn_on(self, row_range_inclusive: tuple[int, int], col_range_inclusive: tuple[int, int]):
+        op = lambda _: True
+        self._apply_operation_to_range(row_range_inclusive, col_range_inclusive, op)
 
     def turn_off(self, row_range_inclusive: tuple[int, int], col_range_inclusive: tuple[int, int]):
-        row_range_inclusive = sorted(row_range_inclusive)
-        col_range_inclusive = sorted(col_range_inclusive)
-        for col in range(col_range_inclusive[0], col_range_inclusive[1] + 1):
-            for row in range(row_range_inclusive[0], row_range_inclusive[1] + 1):
-                self._lights[row][col] = False
+        op = lambda _: False
+        self._apply_operation_to_range(row_range_inclusive, col_range_inclusive, op)
 
     def toggle(self, row_range_inclusive: tuple[int, int], col_range_inclusive: tuple[int, int]):
-        row_range_inclusive = sorted(row_range_inclusive)
-        col_range_inclusive = sorted(col_range_inclusive)
-        for col in range(col_range_inclusive[0], col_range_inclusive[1] + 1):
-            for row in range(row_range_inclusive[0], row_range_inclusive[1] + 1):
-                self._lights[row][col] = not self._lights[row][col]
+        op = lambda val: not val
+        self._apply_operation_to_range(row_range_inclusive, col_range_inclusive, op)
