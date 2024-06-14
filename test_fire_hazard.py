@@ -24,3 +24,12 @@ class TestGrid(TestCase):
         grid.turn_off((9, 999), (5, 6))
         # 9-10 x 5-6 = 4 turned off
         self.assertEqual(96, grid.count_lit())
+
+    def test_toggle(self):
+        grid = Grid()
+
+        grid.turn_on((1, 10), (1, 10))
+        self.assertEqual(100, grid.count_lit())
+
+        grid.toggle((5, 5), (5, 12))
+        self.assertEqual(96, grid.count_lit())
